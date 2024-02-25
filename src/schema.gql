@@ -1,0 +1,87 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Book {
+  _id: String!
+  name: String!
+  author: Admin!
+  readers: [Admin!]!
+}
+
+type Admin {
+  _id: String!
+  name: String!
+  email: String!
+  books: [Book!]!
+}
+
+type User {
+  _id: String!
+  email: String!
+  name: String!
+  avatarKey: String
+  password: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type SignInUser {
+  token: String!
+  user: User!
+}
+
+type Query {
+  getHello: String!
+  admin(limit: Int = 10, skip: Int = 0): [Admin!]!
+  users: [User!]!
+  signIn(signInUserInput: SignInUserInput!): SignInUser!
+  user(id: String!): User
+}
+
+input SignInUserInput {
+  email: String!
+  name: String
+  avatarKey: String
+  password: String!
+}
+
+type Mutation {
+  createAdmin(createAdminInput: CreateAdminInput!): Admin!
+  updateAdmin(updateAdminInput: UpdateAdminInput!): Admin!
+  removeAdmin(id: Int!): Admin!
+  signUp(signUpUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: String!): String!
+}
+
+input CreateAdminInput {
+  name: String!
+  email: String!
+}
+
+input UpdateAdminInput {
+  name: String
+  email: String
+  id: Int!
+}
+
+input CreateUserInput {
+  email: String!
+  name: String
+  avatarKey: String
+  password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  name: String
+  avatarKey: String
+  password: String
+  _id: String!
+}
