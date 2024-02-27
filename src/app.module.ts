@@ -13,6 +13,7 @@ import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     MongooseModule.forRoot('mongodb://localhost:27017/nikhil'),
     AdminModule,
     UserModule,
+    OrganizationModule,
   ],
   controllers: [AppController],
   providers: [

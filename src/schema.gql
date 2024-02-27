@@ -36,12 +36,30 @@ type SignInUser {
   user: User!
 }
 
+type Organization {
+  _id: String!
+
+  """Example field (placeholder)"""
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  createdById: User!
+  users: [OrgUser!]!
+}
+
+type OrgUser {
+  user: User!
+  role: String!
+}
+
 type Query {
   getHello: String!
   admin(limit: Int = 10, skip: Int = 0): [Admin!]!
   users: [User!]!
   signIn(signInUserInput: SignInUserInput!): SignInUser!
   user(id: String!): User
+  organizations: [Organization!]!
+  organization(id: String!): Organization!
 }
 
 input SignInUserInput {
@@ -58,6 +76,13 @@ type Mutation {
   signUp(signUpUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: String!): String!
+  createOrganization(createOrganizationInput: CreateOrganizationInput!): Organization!
+  createOrganizationWithUser(createOrganizationWithUserInput: CreateOrganizationWithUserInput!): Organization!
+  addUserToOrganization(addToOrganizationInput: AddToOrganizationInput!): Organization!
+  updateUserRoleToOrganization(addToOrganizationInput: AddToOrganizationInput!): Organization!
+  removeUserFromOrganization(removeFromOrganizationInput: RemoveFromOrganizationInput!): Organization!
+  updateOrganization(updateOrganizationInput: UpdateOrganizationInput!): Organization!
+  removeOrganization(id: String!): Organization!
 }
 
 input CreateAdminInput {
@@ -83,5 +108,32 @@ input UpdateUserInput {
   name: String
   avatarKey: String
   password: String
+  _id: String!
+}
+
+input CreateOrganizationInput {
+  name: String!
+}
+
+input CreateOrganizationWithUserInput {
+  name: String!
+  email: String!
+  password: String!
+  userName: String!
+}
+
+input AddToOrganizationInput {
+  _id: String!
+  userId: String!
+  role: String!
+}
+
+input RemoveFromOrganizationInput {
+  _id: String!
+  userId: String!
+}
+
+input UpdateOrganizationInput {
+  name: String!
   _id: String!
 }

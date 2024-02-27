@@ -18,7 +18,7 @@ import { GqlAuthGuard } from 'src/guard/auth/gqlAuth.guard';
 import { GqlJWTAuthGuard } from 'src/guard/auth/gqlJwtAuth.guard';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { User } from './entities/user.model';
+import { User } from './user.model';
 import { UserService } from './user.service';
 
 @InputType()

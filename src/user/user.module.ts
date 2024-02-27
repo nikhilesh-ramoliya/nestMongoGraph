@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { jwtSecrete } from 'src/contstant';
 import { JwtStrategy } from 'src/user/auth/jwt.strategy';
-import { User, UserSchema } from 'src/user/entities/user.model';
+import { User, UserSchema } from 'src/user/user.model';
 import { LocalStrategy } from './auth/local.strategy';
 import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
@@ -21,5 +21,6 @@ import { UserService } from './user.service';
     }),
   ],
   providers: [UserResolver, UserService, LocalStrategy, JwtStrategy],
+  exports: [UserService],
 })
 export class UserModule {}

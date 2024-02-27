@@ -19,11 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (payload?.user) {
       const id = new ObjectId(payload.user._id);
       const user = await this.userService.findOne(payload.user._id);
-      console.log(
-        '==== ~ JwtStrategy ~ validate ~ user:',
-        user,
-        payload.user._id,
-      );
       if (user) {
         return user;
       } else {

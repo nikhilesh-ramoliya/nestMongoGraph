@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
-import mongoose, { Model } from 'mongoose';
-import { User } from 'src/user/entities/user.model';
+import mongoose, { Model, Types } from 'mongoose';
+import { User } from 'src/user/user.model';
 import { SignInUserInput } from 'src/user/user.resolver';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
@@ -12,10 +12,13 @@ import { UpdateUserInput } from './dto/update-user.input';
 export class UserService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput) {
+    const password = await bcrypt.hash(createUserInput.password, 10);
+
     const user = new this.userModel({
       _id: new mongoose.Types.ObjectId(),
       ...createUserInput,
+      password,
     });
     return user.save();
   }
@@ -28,7 +31,6 @@ export class UserService {
     const user = await this.userModel.findOne({
       email: args.email,
     });
-
     const isCorrectPss = await bcrypt.compare(args.password, user.password);
     if (isCorrectPss) {
       return user;
@@ -38,6 +40,16 @@ export class UserService {
   async findOne(id: ObjectId) {
     const user = await this.userModel.findById(new mongoose.Types.ObjectId(id));
     return user;
+  }
+
+  async findMultipleById(ids: Types.ObjectId[]) {
+    const idsForFind = ids.map((id) => ({
+      _id: id,
+    }));
+    const users = await this.userModel.find({
+      $or: idsForFind,
+    });
+    return users;
   }
 
   async update(id: string, updateUserInput: Omit<UpdateUserInput, '_id'>) {
