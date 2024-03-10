@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { IsEnum } from 'class-validator';
 
 enum Role {
   MEMBER = 'MEMBER',
@@ -16,6 +17,7 @@ export class RemoveFromOrganizationInput {
 
 @InputType()
 export class AddToOrganizationInput extends RemoveFromOrganizationInput {
+  @IsEnum(Role)
   @Field(() => String)
-  role: string;
+  role: Role;
 }

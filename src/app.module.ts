@@ -12,8 +12,8 @@ import { LoggerMiddleware } from 'src/middelware/logger/logger.middleware';
 import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
 import { OrganizationModule } from './organization/organization.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [

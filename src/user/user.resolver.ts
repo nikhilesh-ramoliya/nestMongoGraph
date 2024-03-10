@@ -70,6 +70,13 @@ export class UserResolver {
     return { token: this.jwtService.sign({ user }), user };
   }
 
+  @UseGuards(GqlJWTAuthGuard)
+  @Query((returns) => SignInUser, { name: 'signInUsingToken' })
+  async signInUsingToken(@UserDecorator() user: User) {
+    if (user) return { token: this.jwtService.sign({ user }), user };
+    else throw new Error('User not found');
+  }
+
   @Query(() => User, { name: 'user', nullable: true })
   findOne(@Args('id', { type: () => String }) id: string) {
     const objectId = new ObjectId(id);

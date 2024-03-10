@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model, Schema, Types } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import mongoose, { Connection, Model, Types } from 'mongoose';
 import {
   AddToOrganizationInput,
   RemoveFromOrganizationInput,
@@ -12,13 +12,16 @@ import { UpdateOrganizationInput } from './dto/update-organization.input';
 @Injectable()
 export class OrganizationService {
   constructor(
+    @InjectConnection() private connection: Connection,
     @InjectModel('Organization')
     private readonly organizationModel: Model<Organization>,
+    @InjectModel('User')
+    private readonly userModel: Model<any>,
   ) {}
 
   async create(
     createOrganizationInput: CreateOrganizationInput,
-    createdById: Schema.Types.ObjectId,
+    createdById: Types.ObjectId,
   ) {
     const organization = new this.organizationModel({
       _id: new mongoose.Types.ObjectId(),
@@ -32,7 +35,15 @@ export class OrganizationService {
       ],
     });
 
-    return organization.save();
+    const org = await organization.save();
+
+    const user = await this.userModel.findByIdAndUpdate(createdById, {
+      $push: {
+        orgs: org._id,
+      },
+    });
+
+    return org;
   }
 
   async addToOrg(addToOrgInput: AddToOrganizationInput) {
@@ -41,7 +52,9 @@ export class OrganizationService {
     );
 
     if (
-      oldOrg.users.find((u) => u.user === new Types.ObjectId(addToOrgInput._id))
+      oldOrg.users.find(
+        (u) => u.user === new Types.ObjectId(addToOrgInput.userId),
+      )
     ) {
       return oldOrg;
     } else {
@@ -57,6 +70,16 @@ export class OrganizationService {
         },
         { new: true },
       );
+
+      const user = await this.userModel.findByIdAndUpdate(
+        new Types.ObjectId(addToOrgInput.userId),
+        {
+          $push: {
+            orgs: org._id,
+          },
+        },
+      );
+
       return org;
     }
   }
@@ -93,6 +116,16 @@ export class OrganizationService {
       },
       { new: true },
     );
+
+    const user = await this.userModel.findByIdAndUpdate(
+      new Types.ObjectId(addToOrgInput.userId),
+      {
+        $pull: {
+          orgs: org._id,
+        },
+      },
+    );
+
     return org;
   }
 
@@ -102,6 +135,19 @@ export class OrganizationService {
 
   async findOne(id: string) {
     const org = await this.organizationModel.findById(new Types.ObjectId(id));
+    return org;
+  }
+
+  async findOneByName(name: string) {
+    const org = await this.organizationModel.findOne({
+      name,
+    });
+    return org;
+  }
+  async findOneByUserId(userId: Types.ObjectId) {
+    const org = await this.organizationModel.find({
+      users: { $elemMatch: { user: userId } },
+    });
     return org;
   }
 

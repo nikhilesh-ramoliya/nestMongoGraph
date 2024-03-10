@@ -56,6 +56,14 @@ export class OrganizationResolver {
 
     const createdUser = await this.userService.create(user);
 
+    const oldOrg = await this.organizationService.findOneByName(
+      createOrganizationWithUserInput.name,
+    );
+
+    if (oldOrg) {
+      throw new Error('Organization already exists');
+    }
+
     return this.organizationService.create(
       {
         name: createOrganizationWithUserInput.name,
@@ -129,5 +137,10 @@ export class OrganizationResolver {
   @Query(() => Organization, { name: 'organization' })
   findOne(@Args('id', { type: () => String }) id: string) {
     return this.organizationService.findOne(id);
+  }
+
+  @Query(() => [Organization], { name: 'userOrgs' })
+  findMyOrgs(@UserDecorator() user: User) {
+    return this.organizationService.findOneByUserId(user._id);
   }
 }

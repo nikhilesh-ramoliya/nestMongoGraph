@@ -21,7 +21,6 @@ type User {
   email: String!
   name: String!
   avatarKey: String
-  password: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -30,11 +29,6 @@ type User {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type SignInUser {
-  token: String!
-  user: User!
-}
 
 type Organization {
   _id: String!
@@ -52,14 +46,21 @@ type OrgUser {
   role: String!
 }
 
+type SignInUser {
+  token: String!
+  user: User!
+}
+
 type Query {
   getHello: String!
   admin(limit: Int = 10, skip: Int = 0): [Admin!]!
   users: [User!]!
   signIn(signInUserInput: SignInUserInput!): SignInUser!
+  signInUsingToken: SignInUser!
   user(id: String!): User
   organizations: [Organization!]!
   organization(id: String!): Organization!
+  userOrgs: [Organization!]!
 }
 
 input SignInUserInput {

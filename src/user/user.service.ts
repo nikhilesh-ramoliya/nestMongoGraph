@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
 import { ObjectId } from 'mongodb';
 import mongoose, { Model, Types } from 'mongoose';
+import { Organization } from 'src/organization/organization.model';
 import { User } from 'src/user/user.model';
 import { SignInUserInput } from 'src/user/user.resolver';
 import { CreateUserInput } from './dto/create-user.input';
@@ -10,9 +11,20 @@ import { UpdateUserInput } from './dto/update-user.input';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Organization')
+    private readonly organizationModel: Model<Organization>,
+  ) {}
 
   async create(createUserInput: CreateUserInput) {
+    const oldUser = await this.userModel.findOne({
+      email: createUserInput.email,
+    });
+
+    if (oldUser) {
+      throw new Error('User already exists');
+    }
     const password = await bcrypt.hash(createUserInput.password, 10);
 
     const user = new this.userModel({

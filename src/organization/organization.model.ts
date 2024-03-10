@@ -3,6 +3,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { ObjectId, Types } from 'mongoose';
 import { User } from 'src/user/user.model';
 
+export enum Role {
+  MEMBER = 'MEMBER',
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+}
 @Schema()
 @ObjectType()
 export class Organization {
@@ -39,8 +44,11 @@ export class OrgUser {
   user: Types.ObjectId;
 
   @Field()
-  @Prop()
-  role: string;
+  @Prop({
+    enum: Role,
+    default: Role.MEMBER,
+  })
+  role: Role;
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
